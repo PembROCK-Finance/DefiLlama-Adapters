@@ -10,16 +10,16 @@ function tvl() {
 
     await Promise.all(Object.values(farms).map(async value => {
       const pool = await call("v2.ref-finance.near", "get_pool", {"pool_id": value.ref_pool_id})
-      const shares1 = BigNumber(await call("v2.ref-finance.near", "mft_balance_of", {token_id: pool.token_account_ids[0], account_id: "v1.pembrock.near"}));
-      const shares2 = BigNumber(await call("v2.ref-finance.near", "mft_balance_of", {token_id: pool.token_account_ids[1], account_id: "v1.pembrock.near"}));
+      const firstTokenShares = BigNumber(await call("v2.ref-finance.near", "mft_balance_of", {token_id: pool.token_account_ids[0], account_id: "v1.pembrock.near"}));
+      const secondTokenShares = BigNumber(await call("v2.ref-finance.near", "mft_balance_of", {token_id: pool.token_account_ids[1], account_id: "v1.pembrock.near"}));
 
       const totalSharesWithFreeAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].free_amount).plus(BigNumber(pool.shares_total_supply));
 
-      const token1_amount = shares1.multipliedBy(BigNumber(pool.amounts[0]).dividedBy(totalSharesWithFreeAmount));
-      const token2_amount = shares2.multipliedBy(BigNumber(pool.amounts[1]).dividedBy(totalSharesWithFreeAmount));
+      const firstTokenAmount = firstTokenShares.multipliedBy(BigNumber(pool.amounts[0]).dividedBy(totalSharesWithFreeAmount));
+      const secondTokenAmount = secondTokenShares.multipliedBy(BigNumber(pool.amounts[1]).dividedBy(totalSharesWithFreeAmount));
 
-      sumSingleBalance(balances, pool.token_account_ids[0], token1_amount);
-      sumSingleBalance(balances, pool.token_account_ids[1], token2_amount);
+      sumSingleBalance(balances, pool.token_account_ids[0], firstTokenAmount);
+      sumSingleBalance(balances, pool.token_account_ids[1], secondTokenAmount);
     }))
 
     return balances;
