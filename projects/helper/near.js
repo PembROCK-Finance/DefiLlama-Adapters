@@ -30,6 +30,7 @@ const tokenMapping = {
   'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near': { name: 'aurora-near', decimals: 18 },
   'token.burrow.near': { name: 'burrow', decimals: 18 },
   'token.paras.near': { name: 'paras', decimals: 18 },
+  'token.pembrock.near': { name: 'pembrock', decimals: 18 },
 }
 
 async function view_account(account_id) {
@@ -90,14 +91,12 @@ function sumSingleBalance(balances, token, balance) {
   if (name) {
     if (decimals)
       balance = BigNumber(balance).shiftedBy(-1 * decimals)
-
     if (!balances[name])
       balances[name] = BigNumber(0)
 
     balances[name] = balances[name].plus(balance)
     return
   }
-
   sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
   return balances
 }
