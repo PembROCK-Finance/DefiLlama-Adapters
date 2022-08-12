@@ -5,7 +5,7 @@ const PEMBROCK_CONTRACT = "v1.pembrock.near"
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near"
 const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near"
 
-function addTokenAmounts(farms, seeds, balances = {}) {
+function addFarmBalances(farms, seeds, balances) {
   return Promise.all(Object.values(farms).map(async value => {
     const pool = await call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": value.ref_pool_id});
     const nonStakedShares = await call(REF_FINANCE_CONTRACT, "mft_balance_of", {token_id:  `:${value.ref_pool_id}`, account_id: PEMBROCK_CONTRACT});
@@ -29,8 +29,10 @@ async function tvl() {
   ]);
 
   const balances = {};
-  await addTokenAmounts(farms, seeds, balances);  
-  await addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances);
+  await Promise.all([
+    addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances),
+    addFarmBalances(farms, seeds, balances)
+  ]);
   return balances;
 }
 
