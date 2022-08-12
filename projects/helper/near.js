@@ -98,6 +98,7 @@ function sumSingleBalance(balances, token, balance) {
     balances[name] = balances[name].plus(balance)
     return
   }
+
   sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
   return balances
 }

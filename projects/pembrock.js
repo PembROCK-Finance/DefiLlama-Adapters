@@ -8,7 +8,7 @@ const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near"
 function addTokenAmounts(farms, seeds, balances = {}) {
   return Promise.all(Object.values(farms).map(async value => {
     const freeAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].free_amount);
-    const lockedAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].lockedAmount);
+    const lockedAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].locked_amount);
     const pool = await call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": value.ref_pool_id});
     let shares = BigNumber(
       await call(REF_FINANCE_CONTRACT, "mft_balance_of", {token_id:  `:${value.ref_pool_id}`, account_id: PEMBROCK_CONTRACT})
