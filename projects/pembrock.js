@@ -5,7 +5,7 @@ const PEMBROCK_CONTRACT = "v1.pembrock.near"
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near"
 const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near"
 
-function addTokenAmounts(balances, farms, seeds) {
+function addTokenAmounts(farms, seeds, balances = {}) {
   return Promise.all(Object.values(farms).map(async value => {
     const freeAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].free_amount);
     const pool = await call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": value.ref_pool_id});
@@ -23,22 +23,20 @@ function addTokenAmounts(balances, farms, seeds) {
   })).then(() => balances);
 }
 
-function tvl() {
-  return async () => {
-    const tokens = await call(PEMBROCK_CONTRACT, "get_tokens", {account_id: PEMBROCK_CONTRACT});
+async function tvl() {
+  const [tokens, farms, seeds] = await Promise.all([
+    call(PEMBROCK_CONTRACT, "get_tokens", {account_id: PEMBROCK_CONTRACT}),
+    call(PEMBROCK_CONTRACT, "get_farms",  {}),
+    call(REF_BOOST_CONTRACT, "list_farmer_seeds", {farmer_id: PEMBROCK_CONTRACT})
+  ]);
 
-    const [balances, farms, seeds] = await Promise.all([
-      addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT),
-      call(PEMBROCK_CONTRACT, "get_farms",  {}),
-      call(REF_BOOST_CONTRACT, "list_farmer_seeds", {farmer_id: PEMBROCK_CONTRACT})
-    ]);
-
-    return addTokenAmounts(balances, farms, seeds);
-  }
+  const balances = await addTokenAmounts(farms, seeds);
+  
+  return addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances);
 }
 
 module.exports = {
   near: {
-    tvl: tvl()
+    tvl
   },
 }
