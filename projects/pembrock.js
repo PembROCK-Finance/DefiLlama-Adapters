@@ -8,19 +8,20 @@ const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near"
 function addTokenAmounts(farms, seeds, balances = {}) {
   return Promise.all(Object.values(farms).map(async value => {
     const freeAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].free_amount);
+    const lockedAmount = BigNumber(seeds[`v2.ref-finance.near@${value.ref_pool_id}`].lockedAmount);
     const pool = await call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": value.ref_pool_id});
-    const shares = BigNumber(
+    let shares = BigNumber(
       await call(REF_FINANCE_CONTRACT, "mft_balance_of", {token_id:  `:${value.ref_pool_id}`, account_id: PEMBROCK_CONTRACT})
-    ).plus(freeAmount);
+    );
+    
+    shares = shares.plus(freeAmount).plus(lockedAmount);
 
-    const totalShares = BigNumber(pool.shares_total_supply);
-
-    const firstTokenAmount = shares.multipliedBy(BigNumber(pool.amounts[0]).dividedBy(totalShares));
-    const secondTokenAmount = shares.multipliedBy(BigNumber(pool.amounts[1]).dividedBy(totalShares));
+    const firstTokenAmount = shares.multipliedBy(pool.amounts[0]).dividedBy(pool.shares_total_supply);
+    const secondTokenAmount = shares.multipliedBy(pool.amounts[1]).dividedBy(pool.shares_total_supply);
 
     sumSingleBalance(balances, pool.token_account_ids[0], firstTokenAmount);
     sumSingleBalance(balances, pool.token_account_ids[1], secondTokenAmount);
-  })).then(() => balances);
+  }));
 }
 
 async function tvl() {
@@ -30,9 +31,10 @@ async function tvl() {
     call(REF_BOOST_CONTRACT, "list_farmer_seeds", {farmer_id: PEMBROCK_CONTRACT})
   ]);
 
-  const balances = await addTokenAmounts(farms, seeds);
-  
-  return addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances);
+  const balances = {};
+  await addTokenAmounts(farms, seeds, balances);  
+  await addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances);
+  return balances;
 }
 
 module.exports = {
