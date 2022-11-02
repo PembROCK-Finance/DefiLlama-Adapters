@@ -45,4 +45,7 @@ module.exports = {
   near: {
     tvl
   },
+  hallmarks: [
+    [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
+  ],
 }

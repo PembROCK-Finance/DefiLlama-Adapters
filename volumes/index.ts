@@ -39,6 +39,7 @@ import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
+import minerswap from "./adapters/minerswap";
 import minswap from "./adapters/minswap";
 import mojitoswap from "./adapters/mojitoswap";
 import mdex from "./adapters/mdex";
@@ -191,11 +192,13 @@ import gravis from "./adapters/gravis";
 import fourSwap from "./adapters/4swap";
 import bisq from "./adapters/bisq";
 import tetu from "./adapters/tetu";
+import thorswap from "./adapters/thorswap";
 import muesliswap from "./adapters/muesliswap";
 import ginFinance from "./adapters/gin-finance";
 import ferro from "./adapters/ferro";
 import incrementSwap from "./adapters/increment-swap";
 import chaingeFinance from "./adapters/chainge-finance";
+import wavelengthDao from "./adapters/wavelength-dao";
 
 
 export default {
@@ -240,6 +243,7 @@ export default {
   platypus,
   "wombat-exchange": wombatExchange,
   wingriders,
+  minerswap,
   minswap,
   mojitoswap,
   mdex,
@@ -390,10 +394,12 @@ export default {
   "4swap": fourSwap,
   bisq,
   tetu,
+  thorswap,
   muesliswap,
   "gin-finance": ginFinance,
   ferro,
   "increment-swap": incrementSwap,
-  "chainge-finance": chaingeFinance
+  "chainge-finance": chaingeFinance,
+  "wavelength-dao": wavelengthDao
   // lyra -> OPTIONS DEX, not enable for now
 };
